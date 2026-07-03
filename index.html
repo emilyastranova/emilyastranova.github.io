@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AstraLabs</title>
+  <style>
+    :root {
+      --glitch-duration: 2.2s;
+    }
+
+    /* Reset & Centering */
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #000;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M 40 0 L 0 0 0 40' fill='none' stroke='rgba(128, 128, 128, 0.15)' stroke-dasharray='2,2' stroke-width='1'/%3E%3C/svg%3E");
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* Container for the logo & effects */
+    .glitch-container {
+      position: relative;
+      width: 640px;
+      max-width: 85%;
+      cursor: pointer;
+      transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* Tactile active press effect */
+    .glitch-container:active {
+      transform: scale(0.96);
+    }
+
+    /* Base logo style */
+    .glitch-base {
+      display: block;
+      width: 100%;
+      height: auto;
+      transition: opacity 0.15s ease;
+    }
+
+    /* Glitch layers */
+    .glitch-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      pointer-events: none;
+    }
+
+    /* RGB Split Filter applications using SVG filters */
+    .glitch-red {
+      filter: url(#red-channel);
+      mix-blend-mode: screen;
+    }
+
+    .glitch-green {
+      filter: url(#green-channel);
+      mix-blend-mode: screen;
+    }
+
+    .glitch-cyan {
+      filter: url(#cyan-channel);
+      mix-blend-mode: screen;
+    }
+
+    /* Subtle CRT Aperture Grille & Scanline texture on the logo container */
+    .glitch-container::after {
+      content: " ";
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%), 
+                  linear-gradient(90deg, rgba(255, 0, 0, 0.08), rgba(0, 255, 0, 0.03), rgba(0, 0, 255, 0.08));
+      background-size: 100% 4px, 6px 100%;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      z-index: 10;
+    }
+
+    /* Glitch states triggered by JS class addition */
+    .is-glitching .glitch-layer {
+      display: block;
+    }
+
+    .is-glitching::after {
+      opacity: 0.95;
+    }
+
+    .is-glitching .glitch-base {
+      opacity: 1;
+    }
+
+    .is-glitching .glitch-red {
+      animation: glitch-anim-red var(--glitch-duration) linear infinite;
+    }
+
+    .is-glitching .glitch-green {
+      animation: glitch-anim-green var(--glitch-duration) linear infinite;
+    }
+
+    .is-glitching .glitch-cyan {
+      animation: glitch-anim-cyan var(--glitch-duration) linear infinite;
+    }
+
+    /* Animation Keyframes */
+    @keyframes glow-shake {
+      0%, 100% { transform: scale(1.3) translate(0, 0); }
+      33% { transform: scale(1.35) translate(-4px, 2px); }
+      66% { transform: scale(1.25) translate(4px, -2px); }
+    }
+
+    @keyframes glitch-base-shake {
+      0%, 100% { transform: translate(0, 0); }
+      20% { transform: translate(-1px, 0); }
+      40% { transform: translate(1.5px, 0); }
+      60% { transform: translate(-0.5px, 0); }
+      80% { transform: translate(1px, 0); }
+    }
+
+    @keyframes glitch-anim-red {
+      0%, 4.9%, 7.1%, 14.9%, 17.1%, 25.9%, 28.1%, 37.9%, 40.1%, 47.9%, 50.1%, 57.9%, 60.1%, 69.9%, 72.1%, 79.9%, 82.1%, 89.9%, 92.1%, 100% {
+        transform: none;
+        clip-path: inset(0% 0% 0% 0%);
+      }
+      5.0%, 7.0% {
+        transform: translateX(var(--glitch-red-1, -8px));
+        clip-path: inset(var(--clip-top-1, 25%) var(--clip-right-1, 0%) var(--clip-bottom-1, 72%) var(--clip-left-1, 0%));
+      }
+      15.0%, 17.0% {
+        transform: translateX(var(--glitch-red-2, 12px));
+        clip-path: inset(var(--clip-top-2, 50%) var(--clip-right-2, 0%) var(--clip-bottom-2, 47%) var(--clip-left-2, 0%));
+      }
+      26.0%, 28.0% {
+        transform: translateX(var(--glitch-red-3, -12px));
+        clip-path: inset(var(--clip-top-3, 35%) var(--clip-right-3, 50%) var(--clip-bottom-3, 50%) var(--clip-left-3, 10%));
+      }
+      38.0%, 40.0% {
+        transform: translateX(var(--glitch-red-4, 10px));
+        clip-path: inset(var(--clip-top-4, 82%) var(--clip-right-4, 0%) var(--clip-bottom-4, 14%) var(--clip-left-4, 0%));
+      }
+      48.0%, 50.0% {
+        transform: translateX(var(--glitch-red-5, -11px));
+        clip-path: inset(var(--clip-top-5, 8%) var(--clip-right-5, 0%) var(--clip-bottom-5, 88%) var(--clip-left-5, 0%));
+      }
+      58.0%, 60.0% {
+        transform: translateX(var(--glitch-red-6, 13px));
+        clip-path: inset(var(--clip-top-6, 15%) var(--clip-right-6, 15%) var(--clip-bottom-6, 70%) var(--clip-left-6, 65%));
+      }
+      70.0%, 72.0% {
+        transform: translateX(var(--glitch-red-7, -14px));
+        clip-path: inset(var(--clip-top-7, 65%) var(--clip-right-7, 0%) var(--clip-bottom-7, 31%) var(--clip-left-7, 0%));
+      }
+      80.0%, 82.0% {
+        transform: translateX(var(--glitch-red-8, 11px));
+        clip-path: inset(var(--clip-top-8, 38%) var(--clip-right-8, 0%) var(--clip-bottom-8, 59%) var(--clip-left-8, 0%));
+      }
+      90.0%, 92.0% {
+        transform: translateX(var(--glitch-red-9, -15px));
+        clip-path: inset(var(--clip-top-9, 75%) var(--clip-right-9, 75%) var(--clip-bottom-9, 10%) var(--clip-left-9, 5%));
+      }
+    }
+
+    @keyframes glitch-anim-green {
+      0%, 4.9%, 7.1%, 14.9%, 17.1%, 25.9%, 28.1%, 37.9%, 40.1%, 47.9%, 50.1%, 57.9%, 60.1%, 69.9%, 72.1%, 79.9%, 82.1%, 89.9%, 92.1%, 100% {
+        transform: none;
+        clip-path: inset(0% 0% 0% 0%);
+      }
+      5.0%, 7.0% {
+        transform: translateX(var(--glitch-green-1, -5px));
+        clip-path: inset(var(--clip-top-1, 25%) var(--clip-right-1, 0%) var(--clip-bottom-1, 72%) var(--clip-left-1, 0%));
+      }
+      15.0%, 17.0% {
+        transform: translateX(var(--glitch-green-2, 6px));
+        clip-path: inset(var(--clip-top-2, 50%) var(--clip-right-2, 0%) var(--clip-bottom-2, 47%) var(--clip-left-2, 0%));
+      }
+      26.0%, 28.0% {
+        transform: translateX(var(--glitch-green-3, -9px));
+        clip-path: inset(var(--clip-top-3, 35%) var(--clip-right-3, 50%) var(--clip-bottom-3, 50%) var(--clip-left-3, 10%));
+      }
+      38.0%, 40.0% {
+        transform: translateX(var(--glitch-green-4, 14px));
+        clip-path: inset(var(--clip-top-4, 82%) var(--clip-right-4, 0%) var(--clip-bottom-4, 14%) var(--clip-left-4, 0%));
+      }
+      48.0%, 50.0% {
+        transform: translateX(var(--glitch-green-5, -7px));
+        clip-path: inset(var(--clip-top-5, 8%) var(--clip-right-5, 0%) var(--clip-bottom-5, 88%) var(--clip-left-5, 0%));
+      }
+      58.0%, 60.0% {
+        transform: translateX(var(--glitch-green-6, 9px));
+        clip-path: inset(var(--clip-top-6, 15%) var(--clip-right-6, 15%) var(--clip-bottom-6, 70%) var(--clip-left-6, 65%));
+      }
+      70.0%, 72.0% {
+        transform: translateX(var(--glitch-green-7, -10px));
+        clip-path: inset(var(--clip-top-7, 65%) var(--clip-right-7, 0%) var(--clip-bottom-7, 31%) var(--clip-left-7, 0%));
+      }
+      80.0%, 82.0% {
+        transform: translateX(var(--glitch-green-8, 7px));
+        clip-path: inset(var(--clip-top-8, 38%) var(--clip-right-8, 0%) var(--clip-bottom-8, 59%) var(--clip-left-8, 0%));
+      }
+      90.0%, 92.0% {
+        transform: translateX(var(--glitch-green-9, -11px));
+        clip-path: inset(var(--clip-top-9, 75%) var(--clip-right-9, 75%) var(--clip-bottom-9, 10%) var(--clip-left-9, 5%));
+      }
+    }
+
+    @keyframes glitch-anim-cyan {
+      0%, 4.9%, 7.1%, 14.9%, 17.1%, 25.9%, 28.1%, 37.9%, 40.1%, 47.9%, 50.1%, 57.9%, 60.1%, 69.9%, 72.1%, 79.9%, 82.1%, 89.9%, 92.1%, 100% {
+        transform: none;
+        clip-path: inset(0% 0% 0% 0%);
+      }
+      5.0%, 7.0% {
+        transform: translateX(var(--glitch-cyan-1, -2px));
+        clip-path: inset(var(--clip-top-1, 25%) var(--clip-right-1, 0%) var(--clip-bottom-1, 72%) var(--clip-left-1, 0%));
+      }
+      15.0%, 17.0% {
+        transform: translateX(var(--glitch-cyan-2, 9px));
+        clip-path: inset(var(--clip-top-2, 50%) var(--clip-right-2, 0%) var(--clip-bottom-2, 47%) var(--clip-left-2, 0%));
+      }
+      26.0%, 28.0% {
+        transform: translateX(var(--glitch-cyan-3, -6px));
+        clip-path: inset(var(--clip-top-3, 35%) var(--clip-right-3, 50%) var(--clip-bottom-3, 50%) var(--clip-left-3, 10%));
+      }
+      38.0%, 40.0% {
+        transform: translateX(var(--glitch-cyan-4, 7px));
+        clip-path: inset(var(--clip-top-4, 82%) var(--clip-right-4, 0%) var(--clip-bottom-4, 14%) var(--clip-left-4, 0%));
+      }
+      48.0%, 50.0% {
+        transform: translateX(var(--glitch-cyan-5, -4px));
+        clip-path: inset(var(--clip-top-5, 8%) var(--clip-right-5, 0%) var(--clip-bottom-5, 88%) var(--clip-left-5, 0%));
+      }
+      58.0%, 60.0% {
+        transform: translateX(var(--glitch-cyan-6, 16px));
+        clip-path: inset(var(--clip-top-6, 15%) var(--clip-right-6, 15%) var(--clip-bottom-6, 70%) var(--clip-left-6, 65%));
+      }
+      70.0%, 72.0% {
+        transform: translateX(var(--glitch-cyan-7, -6px));
+        clip-path: inset(var(--clip-top-7, 65%) var(--clip-right-7, 0%) var(--clip-bottom-7, 31%) var(--clip-left-7, 0%));
+      }
+      80.0%, 82.0% {
+        transform: translateX(var(--glitch-cyan-8, 14px));
+        clip-path: inset(var(--clip-top-8, 38%) var(--clip-right-8, 0%) var(--clip-bottom-8, 59%) var(--clip-left-8, 0%));
+      }
+      90.0%, 92.0% {
+        transform: translateX(var(--glitch-cyan-9, -7px));
+        clip-path: inset(var(--clip-top-9, 75%) var(--clip-right-9, 75%) var(--clip-bottom-9, 10%) var(--clip-left-9, 5%));
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hidden SVG filters for perfect RGB channel splitting -->
+  <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" aria-hidden="true" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <!-- Isolates the red color channel -->
+      <filter id="red-channel">
+        <feColorMatrix type="matrix" values="
+          1 0 0 0 0
+          0 0 0 0 0
+          0 0 0 0 0
+          0 0 0 1 0" />
+        <feComposite operator="in" in2="SourceGraphic" />
+      </filter>
+      <!-- Isolates the green color channel -->
+      <filter id="green-channel">
+        <feColorMatrix type="matrix" values="
+          0 0 0 0 0
+          0 1 0 0 0
+          0 0 0 0 0
+          0 0 0 1 0" />
+        <feComposite operator="in" in2="SourceGraphic" />
+      </filter>
+      <!-- Isolates the cyan color channel -->
+      <filter id="cyan-channel">
+        <feColorMatrix type="matrix" values="
+          0 0 0 0 0
+          0 1 0 0 0
+          0 0 1 0 0
+          0 0 0 1 0" />
+        <feComposite operator="in" in2="SourceGraphic" />
+      </filter>
+    </defs>
+  </svg>
+
+  <!-- Interactive Glitch Logo Container -->
+  <div class="glitch-container" id="logo-container">
+    <!-- Base Logo (displayed clean normally) -->
+    <img class="glitch-base" src="images/logo.png" alt="AstraLabs Logo">
+    
+    <!-- Duplicated Layers for RGB chromatic aberration split (rendered dynamically on glitch) -->
+    <img class="glitch-layer glitch-red" src="images/logo.png" alt="">
+    <img class="glitch-layer glitch-green" src="images/logo.png" alt="">
+    <img class="glitch-layer glitch-cyan" src="images/logo.png" alt="">
+  </div>
+
+  <script>
+    const logoContainer = document.getElementById('logo-container');
+    let glitchTimeout = null;
+    let autoGlitchInterval = null;
+    let isManuallyGlitching = false;
+
+    // Helper to generate dynamic, completely random glitch properties bound to CSS variables
+    function randomizeGlitchVariables() {
+      for (let i = 1; i <= 9; i++) {
+        // Random base shift: between -14px and 14px, avoiding the deadzone of -3px to 3px
+        let baseShift = (Math.random() * 24 - 12);
+        if (Math.abs(baseShift) < 4) {
+          baseShift = baseShift < 0 ? -4 : 4;
+        }
+
+        // Calculate custom randomized chromatic offsets for red, green, cyan channels
+        const redShift = baseShift - 4 - Math.random() * 2;
+        const greenShift = baseShift * 0.7;
+        const cyanShift = baseShift + 4 + Math.random() * 2;
+
+        logoContainer.style.setProperty(`--glitch-red-${i}`, `${redShift}px`);
+        logoContainer.style.setProperty(`--glitch-green-${i}`, `${greenShift}px`);
+        logoContainer.style.setProperty(`--glitch-cyan-${i}`, `${cyanShift}px`);
+
+        // Randomize the shapes and vertical positions
+        // Pops 3, 6, and 9 are square blocks/bit artifacts (random vertical and horizontal bounds)
+        if (i === 3 || i === 6 || i === 9) {
+          const top = Math.floor(Math.random() * 70); // 0% to 70%
+          const height = 10 + Math.floor(Math.random() * 20); // 10% to 30% height
+          const bottom = 100 - (top + height);
+          const left = Math.floor(Math.random() * 60); // 0% to 60%
+          const width = 15 + Math.floor(Math.random() * 25); // 15% to 40% width
+          const right = 100 - (left + width);
+
+          logoContainer.style.setProperty(`--clip-top-${i}`, `${top}%`);
+          logoContainer.style.setProperty(`--clip-right-${i}`, `${right}%`);
+          logoContainer.style.setProperty(`--clip-bottom-${i}`, `${bottom}%`);
+          logoContainer.style.setProperty(`--clip-left-${i}`, `${left}%`);
+        } else {
+          // Pops 1, 2, 4, 5, 7, and 8 are full-width horizontal strips
+          const top = Math.floor(Math.random() * 85); // 0% to 85%
+          const height = 2 + Math.floor(Math.random() * 10); // 2% to 12% height
+          const bottom = 100 - (top + height);
+
+          logoContainer.style.setProperty(`--clip-top-${i}`, `${top}%`);
+          logoContainer.style.setProperty(`--clip-right-${i}`, `0%`);
+          logoContainer.style.setProperty(`--clip-bottom-${i}`, `${bottom}%`);
+          logoContainer.style.setProperty(`--clip-left-${i}`, `0%`);
+        }
+      }
+    }
+
+    // Helper to trigger the glitch state
+    function triggerGlitch(duration = 550) {
+      if (logoContainer.classList.contains('is-glitching')) return;
+
+      randomizeGlitchVariables(); // Compute a brand-new random glitch signature!
+      logoContainer.classList.add('is-glitching');
+
+      // Clear any pending timeout to turn off the glitch
+      if (glitchTimeout) {
+        clearTimeout(glitchTimeout);
+      }
+
+      glitchTimeout = setTimeout(() => {
+        logoContainer.classList.remove('is-glitching');
+        isManuallyGlitching = false;
+      }, duration);
+    }
+
+    // Schedule the next automated glitch with a randomized interval (between 2.5s and 5.5s)
+    function scheduleAutoGlitch() {
+      const delay = 2500 + Math.random() * 3000;
+      
+      autoGlitchInterval = setTimeout(() => {
+        // Only trigger automatically if user is not currently doing interactive gestures
+        if (!isManuallyGlitching) {
+          triggerGlitch(450 + Math.random() * 200); // randomize glitch duration slightly
+        }
+        scheduleAutoGlitch();
+      }, delay);
+    }
+
+    // Interactive Hover: Triggers a quick glitch on mouse entering the logo
+    logoContainer.addEventListener('mouseenter', () => {
+      isManuallyGlitching = true;
+      triggerGlitch(350);
+    });
+
+    // Interactive Click: Triggers a stronger, slightly longer glitch on click/tap
+    logoContainer.addEventListener('click', () => {
+      isManuallyGlitching = true;
+      triggerGlitch(750); // Intense, long glitch for satisfying physical feedback
+    });
+
+    // Start the automated loop
+    randomizeGlitchVariables();
+    scheduleAutoGlitch();
+  </script>
+</body>
+</html>
